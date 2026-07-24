@@ -8,7 +8,7 @@ It communicates directly with the cooler's MacroSilicon USB display
 
 ## Features
 
-- Images and looping video backgrounds
+- Static images, animated GIFs, and looping video backgrounds
 - Live 480×480 editor preview
 - Drag-and-drop positioning for text layers
 - CPU and GPU temperature

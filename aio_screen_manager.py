@@ -16,7 +16,7 @@ import time
 
 import cairo
 import gi
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageSequence
 import vlc
 
 gi.require_version("Gtk", "3.0")
@@ -486,6 +486,52 @@ class VideoBackground:
         self.instance.release()
 
 
+def is_animated_image(path):
+    try:
+        with Image.open(path) as source:
+            return bool(getattr(source, "is_animated", False) and source.n_frames > 1)
+    except (OSError, ValueError):
+        return False
+
+
+class AnimatedImageBackground:
+    """Decode an animated GIF and preserve its per-frame timing."""
+
+    def __init__(self, path):
+        self.frames = []
+        self.durations = []
+        with Image.open(path) as source:
+            if not getattr(source, "is_animated", False) or source.n_frames < 2:
+                raise ValueError("The selected image is not animated")
+            default_duration = max(20, int(source.info.get("duration", 100)))
+            for source_frame in ImageSequence.Iterator(source):
+                duration = max(
+                    20,
+                    int(source_frame.info.get("duration", default_duration)),
+                )
+                self.frames.append(cover_image(source_frame.convert("RGBA")))
+                self.durations.append(duration / 1000.0)
+        if not self.frames:
+            raise ValueError("The animated image contains no frames")
+        self.index = 0
+        self.deadline = time.monotonic() + self.durations[0]
+
+    def frame(self):
+        now = time.monotonic()
+        advanced = 0
+        while now >= self.deadline and advanced < len(self.frames):
+            self.index = (self.index + 1) % len(self.frames)
+            self.deadline += self.durations[self.index]
+            advanced += 1
+        if advanced == len(self.frames) and now >= self.deadline:
+            self.deadline = now + self.durations[self.index]
+        return self.frames[self.index]
+
+    def close(self):
+        self.frames.clear()
+        self.durations.clear()
+
+
 def static_background(settings):
     path = settings.get("media_path", "")
     if settings.get("media_type") == "image" and path:
@@ -783,6 +829,7 @@ def run_renderer():
     RENDERER_PID.write_text(str(os.getpid()), encoding="utf-8")
     detach_aio_from_desktop()
     video = None
+    animation = None
     display = None
     media_key = None
     static = None
@@ -795,6 +842,9 @@ def run_renderer():
                 if video:
                     video.close()
                     video = None
+                if animation:
+                    animation.close()
+                    animation = None
                 media_key = new_key
                 static = static_background(settings)
                 if new_key[0] == "video" and new_key[1] and Path(new_key[1]).is_file():
@@ -805,7 +855,26 @@ def run_renderer():
                             f"Video initialization error: {error}\n",
                             encoding="utf-8",
                         )
-            background = video.frame() if video else static
+                elif (
+                    new_key[0] == "image"
+                    and new_key[1]
+                    and Path(new_key[1]).is_file()
+                    and is_animated_image(new_key[1])
+                ):
+                    try:
+                        animation = AnimatedImageBackground(new_key[1])
+                    except Exception as error:
+                        RENDERER_LOG.write_text(
+                            f"GIF initialization error: {error}\n",
+                            encoding="utf-8",
+                        )
+            background = (
+                video.frame()
+                if video
+                else animation.frame()
+                if animation
+                else static
+            )
             if background is None:
                 background = static or gradient_background()
             frame = render_frame(settings, background)
@@ -820,10 +889,12 @@ def run_renderer():
             except OSError as error:
                 RENDERER_LOG.write_text(f"Framebuffer error: {error}\n", encoding="utf-8")
                 return 1
-            time.sleep(1 / 15 if video else 1)
+            time.sleep(1 / 30 if animation else 1 / 15 if video else 1)
     finally:
         if video:
             video.close()
+        if animation:
+            animation.close()
         if display:
             display.close()
 
@@ -1074,6 +1145,7 @@ class Manager(Gtk.Window):
         self.preview_bytes = None
         self.preview_boxes = {}
         self.preview_video = None
+        self.preview_animation = None
         self.preview_media_key = None
         self._updating_controls = False
         self.set_default_size(1080, 780)
@@ -1370,16 +1442,31 @@ class Manager(Gtk.Window):
             if self.preview_video:
                 self.preview_video.close()
                 self.preview_video = None
+            if self.preview_animation:
+                self.preview_animation.close()
+                self.preview_animation = None
             self.preview_media_key = key
             if key[0] == "video" and key[1] and Path(key[1]).is_file():
                 try:
                     self.preview_video = VideoBackground(key[1])
                 except Exception:
                     self.preview_video = None
+            elif (
+                key[0] == "image"
+                and key[1]
+                and Path(key[1]).is_file()
+                and is_animated_image(key[1])
+            ):
+                try:
+                    self.preview_animation = AnimatedImageBackground(key[1])
+                except Exception:
+                    self.preview_animation = None
         if self.preview_video:
             frame = self.preview_video.frame()
             if frame is not None:
                 return frame
+        if self.preview_animation:
+            return self.preview_animation.frame()
         return static_background(self.settings)
 
     def update_preview(self):
@@ -1431,8 +1518,10 @@ class Manager(Gtk.Window):
         )
         media_filter = Gtk.FileFilter()
         if media_type == "image":
-            media_filter.set_name("Images")
+            media_filter.set_name("Images and animated GIFs")
             media_filter.add_pixbuf_formats()
+            media_filter.add_pattern("*.gif")
+            media_filter.add_pattern("*.GIF")
         else:
             media_filter.set_name("Videos")
             media_filter.add_mime_type("video/*")
@@ -1490,6 +1579,9 @@ class Manager(Gtk.Window):
         if self.preview_video:
             self.preview_video.close()
             self.preview_video = None
+        if self.preview_animation:
+            self.preview_animation.close()
+            self.preview_animation = None
         Gtk.main_quit()
 
 
