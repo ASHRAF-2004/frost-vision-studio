@@ -1,0 +1,6 @@
+# Direct access for the standalone Vmax-compatible userspace driver.
+SUBSYSTEM=="usb", ATTR{idVendor}=="345f", ATTR{idProduct}=="9132", MODE="0666", TAG+="uaccess"
+
+# Keep the optional DRM device away from the normal desktop seat.
+SUBSYSTEM=="graphics", KERNEL=="fb*", ATTR{name}=="ms912xdrmfb", MODE="0666"
+SUBSYSTEM=="drm", KERNEL=="card[0-9]*", ATTRS{idVendor}=="345f", ATTRS{idProduct}=="9132", ENV{ID_SEAT}="seat-aio", TAG+="seat"

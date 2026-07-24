@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+*.log
+
+# Local reverse-engineering and vendor-package artifacts
+vmax-analysis/
+vmax-windows-package/
+ms9132-official-linux/
+ms9132-official-source/
+
+# Experimental kernel-driver checkout and build products
+ms912x-driver/
+install-standalone-screen.sh
+install-unmute-driver.sh
+
+# Local editor and environment files
+.idea/
+.vscode/
+.venv/
+venv/
