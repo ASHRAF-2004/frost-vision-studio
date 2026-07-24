@@ -49,6 +49,7 @@ OVERLAY_DEFAULTS = {
         "font": "Noto Sans",
         "bold": True,
         "prefix": "CPU ",
+        "rotation": 0,
     },
     "gpu_temp": {
         "name": "GPU temperature",
@@ -59,6 +60,7 @@ OVERLAY_DEFAULTS = {
         "font": "Noto Sans",
         "bold": True,
         "prefix": "GPU ",
+        "rotation": 0,
     },
     "cpu_usage": {
         "name": "CPU usage",
@@ -69,6 +71,7 @@ OVERLAY_DEFAULTS = {
         "font": "Noto Sans",
         "bold": True,
         "prefix": "CPU ",
+        "rotation": 0,
     },
     "gpu_usage": {
         "name": "GPU usage",
@@ -79,6 +82,7 @@ OVERLAY_DEFAULTS = {
         "font": "Noto Sans",
         "bold": True,
         "prefix": "GPU ",
+        "rotation": 0,
     },
     "clock": {
         "name": "Clock",
@@ -89,6 +93,7 @@ OVERLAY_DEFAULTS = {
         "font": "Noto Sans",
         "bold": True,
         "prefix": "",
+        "rotation": 0,
     },
 }
 
@@ -405,9 +410,81 @@ def transform_background(background, settings):
     return image
 
 
+def rotated_text_bounds(value, text_font, rotation):
+    """Return an axis-aligned text box after rotating around its center anchor."""
+    left, top, right, bottom = text_font.getbbox(value, anchor="mm")
+    rotation = int(rotation) % 360
+    if rotation == 0:
+        return left, top, right, bottom
+    if rotation == 90:
+        return -bottom, left, -top, right
+    if rotation == 180:
+        return -right, -bottom, -left, -top
+    if rotation == 270:
+        return top, -right, bottom, -left
+
+    angle = math.radians(rotation)
+    cosine, sine = math.cos(angle), math.sin(angle)
+    corners = []
+    for x, y in ((left, top), (right, top), (right, bottom), (left, bottom)):
+        corners.append((x * cosine - y * sine, x * sine + y * cosine))
+    return (
+        math.floor(min(point[0] for point in corners)),
+        math.floor(min(point[1] for point in corners)),
+        math.ceil(max(point[0] for point in corners)),
+        math.ceil(max(point[1] for point in corners)),
+    )
+
+
+def draw_rotated_text(canvas, position, value, text_font, fill, rotation):
+    """Draw text around a fixed center anchor, optionally rotated clockwise."""
+    rotation = int(rotation) % 360
+    if not rotation:
+        ImageDraw.Draw(canvas).text(
+            position,
+            value,
+            font=text_font,
+            fill=fill,
+            anchor="mm",
+        )
+        return
+
+    left, top, right, bottom = text_font.getbbox(value, anchor="mm")
+    radius = max(
+        1,
+        math.ceil(
+            max(
+                math.hypot(x, y)
+                for x, y in (
+                    (left, top),
+                    (right, top),
+                    (right, bottom),
+                    (left, bottom),
+                )
+            )
+        )
+        + 2,
+    )
+    side = radius * 2 + 1
+    layer = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    ImageDraw.Draw(layer).text(
+        (radius, radius),
+        value,
+        font=text_font,
+        fill=fill,
+        anchor="mm",
+    )
+    layer = layer.rotate(
+        -rotation,
+        resample=Image.Resampling.BICUBIC,
+        expand=False,
+    )
+    x, y = position
+    canvas.alpha_composite(layer, (round(x - radius), round(y - radius)))
+
+
 def add_overlays(background, settings):
     canvas = background.convert("RGBA")
-    draw = ImageDraw.Draw(canvas)
     enabled = settings.get("overlays", {})
     styles = settings.get("overlay_styles", {})
     for key in OVERLAY_DEFAULTS:
@@ -422,15 +499,16 @@ def add_overlays(background, settings):
             resolve_font(style.get("font", "Noto Sans"), bool(style.get("bold"))),
             size,
         )
-        draw.text(
+        draw_rotated_text(
+            canvas,
             (
                 max(0, min(PANEL_SIZE, int(style.get("x", 240)))),
                 max(0, min(PANEL_SIZE, int(style.get("y", 240)))),
             ),
             value,
-            font=text_font,
-            fill=parse_color(style.get("color")),
-            anchor="mm",
+            text_font,
+            parse_color(style.get("color")),
+            style.get("rotation", 0),
         )
     return canvas.convert("RGB")
 
@@ -1314,6 +1392,13 @@ class Manager(Gtk.Window):
         grid.attach(self.position_x, 1, 4, 1, 1)
         grid.attach(self.position_y, 2, 4, 1, 1)
 
+        self.text_rotation = Gtk.ComboBoxText()
+        for value in (0, 90, 180, 270):
+            self.text_rotation.append(str(value), f"{value}°")
+        self.text_rotation.connect("changed", self.layer_control_changed)
+        grid.attach(Gtk.Label(label="Rotation:", xalign=0), 0, 5, 1, 1)
+        grid.attach(self.text_rotation, 1, 5, 2, 1)
+
         reset = Gtk.Button(label="Reset selected text")
         reset.connect("clicked", self.reset_selected)
         box.pack_start(reset, False, False, 0)
@@ -1388,6 +1473,7 @@ class Manager(Gtk.Window):
         self.color.set_rgba(rgba)
         self.position_x.set_value(float(style.get("x", 240)))
         self.position_y.set_value(float(style.get("y", 240)))
+        self.text_rotation.set_active_id(str(int(style.get("rotation", 0)) % 360))
         self._updating_controls = False
 
     def layer_control_changed(self, *_args):
@@ -1412,6 +1498,7 @@ class Manager(Gtk.Window):
             "bold": self.bold.get_active(),
             "color": color,
             "prefix": self.prefix.get_text(),
+            "rotation": int(self.text_rotation.get_active_id() or 0),
         }
         resolve_font.cache_clear()
         self.commit_changes()
@@ -1499,7 +1586,11 @@ class Manager(Gtk.Window):
                 resolve_font(style.get("font", "Noto Sans"), bool(style.get("bold"))),
                 int(style.get("size", 28)),
             )
-            left, top, right, bottom = text_font.getbbox(text, anchor="mm")
+            left, top, right, bottom = rotated_text_bounds(
+                text,
+                text_font,
+                style.get("rotation", 0),
+            )
             x, y = int(style.get("x", 240)), int(style.get("y", 240))
             boxes[key] = (x + left, y + top, x + right, y + bottom)
         return boxes

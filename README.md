@@ -14,7 +14,7 @@ It communicates directly with the cooler's MacroSilicon USB display
 - CPU and GPU temperature
 - CPU and GPU usage
 - 12-hour clock
-- Independent font, size, color, opacity, bold style, prefix, and position
+- Independent font, size, color, opacity, bold style, prefix, position, and rotation
 - Background rotation and horizontal or vertical flipping
 - Automatic startup option
 - Direct USB transfer using the panel's Vmax-compatible protocol
