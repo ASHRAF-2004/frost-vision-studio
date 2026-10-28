@@ -11,6 +11,8 @@ Windows USB output requires an already compatible bulk interface driver. The dev
 
 This is a preview release. macOS, other panels and other resolutions are not yet qualified. CPU/GPU temperature availability depends on the operating system and sensor provider; unavailable readings show `--`. The app does not control cooling, fans or firmware.
 
+On the development Windows machine, separate two-minute static, GIF and video USB runs averaged 0.06%, 0.30% and 0.47% machine CPU respectively, without a growing memory trend in these short probes. Repeated media/session cleanup also passed. See docs/VERIFICATION.md for scope, measurements and unverified physical-picture acceptance.
+
 Download the `windows-x64-setup.exe` to install on Windows, or extract the portable archive for your platform. Review `docs/INSTALLATION.md` for Linux USB access and runtime requirements. Compare downloads with `SHA256SUMS.txt`.
 
 The Windows executable is not Authenticode signed; the verified publisher dialog will not show a commercial signing identity. Repository source, MIT license, third-party notices, contributing guide and architecture documentation are included in the project.

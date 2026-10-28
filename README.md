@@ -57,6 +57,8 @@ The editor's animated output is capped at **10 frames per second**, static compo
 
 These are safeguards, not a promise that every media file or machine will use the same CPU or memory. Resource use still depends on codec, source resolution, sensor availability, and drivers. See [verification lanes and soak testing](docs/TESTING.md); a short test cannot establish that an app is free of memory leaks.
 
+The [0.2.0 verification record](docs/VERIFICATION.md) contains measured Windows USB and cleanup results, with remaining qualification limits.
+
 ## Technology
 
 | Layer | Technology | Role |

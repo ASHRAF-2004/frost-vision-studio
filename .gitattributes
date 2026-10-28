@@ -5,3 +5,5 @@
 *.md text eol=lf
 *.ico binary
 *.png binary
+# Preserve verbatim upstream notices, including their intentional whitespace.
+licenses/media/** -whitespace

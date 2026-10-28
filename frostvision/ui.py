@@ -236,10 +236,18 @@ class CompositionWorker(threading.Thread):
                     if source is None:
                         source = BackgroundSource({"media_type": "none", "media_path": ""})
                     if applied_revision != revision:
+                        previous_media_error = getattr(source, "error", "")
                         try:
                             source.set_settings(settings)
                         except ValueError as error:
                             self._publish_state(error=str(error), status=f"Media: {error}")
+                        else:
+                            state = self.state
+                            if previous_media_error and not source.error and state.error == previous_media_error:
+                                self._publish_state(error="", status=(
+                                    "Frost Vision connected — live composition is running." if state.running else
+                                    "Preview only — use Apply / Start display to connect."
+                                ))
                         applied_revision = revision
                         next_frame = min(next_frame, last_frame + 1 / ANIMATION_FPS)
                     now = time.monotonic()

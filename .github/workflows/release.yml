@@ -74,7 +74,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Retain LGPL component sources
+      - name: Retain native dependency sources
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           python scripts/fetch_sources.py
           cp dist/*third-party-sources.tar.gz release-assets/

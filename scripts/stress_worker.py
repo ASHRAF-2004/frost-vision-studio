@@ -17,6 +17,7 @@ import sys
 import tempfile
 import time
 from unittest.mock import patch
+import weakref
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -197,6 +198,10 @@ def run(cycles):
                 checks["latest_frame_released"] = worker.latest_frame() is None if worker else True
                 checks["all_fake_displays_closed"] = counters["opens"] == counters["closes"] and not counters["live_displays"]
                 checks["status_released"] = not ui.RENDERER_STATUS.exists()
+        owner_reference = weakref.ref(worker) if worker else lambda: None
+        worker = None
+        gc.collect()
+        checks["first_owner_object_released"] = owner_reference() is None
         # Native Windows runtimes can finish destroying worker resources shortly
         # after Python's join returns. Record a settled value, not the exit race.
         time.sleep(0.5)
@@ -226,6 +231,10 @@ def run(cycles):
                 errors.append(f"Cleanup probe {type(error).__name__}: {error}")
             finally:
                 checks["second_worker_joined"] = probe.shutdown(10) if probe else True
+        probe_reference = weakref.ref(probe) if probe else lambda: None
+        probe = None
+        gc.collect()
+        checks["second_owner_object_released"] = probe_reference() is None
         time.sleep(0.5)
         after_probe = snapshot(process, cycles + 3, "after_second_owner_shutdown")
         samples.append(after_probe)
@@ -239,7 +248,7 @@ def run(cycles):
         for sample in samples:
             sample["elapsed"] = round(sample["elapsed"] - started, 3)
         return dict(app_version=__version__, lane="generated-media worker start/stop stress", usb_writes=False,
-                    cycles_requested=cycles, elapsed_seconds=round(duration, 3),
+                    cycles_requested=cycles, cleanup_probe_cycles=3, elapsed_seconds=round(duration, 3),
                     cpu_seconds=round(cpu_seconds, 3),
                     average_one_core_cpu_percent=round(cpu_seconds / duration * 100, 2),
                     average_machine_cpu_percent=round(cpu_seconds / duration / (psutil.cpu_count() or 1) * 100, 2),
@@ -256,8 +265,8 @@ def main():
     parser.add_argument("--cycles", type=int, default=72)
     parser.add_argument("--output", type=Path, default=Path("verification-local/worker-stress.json"))
     args = parser.parse_args()
-    if not 18 <= args.cycles <= 120:
-        parser.error("--cycles must be between 18 and 120")
+    if not 24 <= args.cycles <= 120:
+        parser.error("--cycles must be between 24 and 120")
     report = run(args.cycles)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

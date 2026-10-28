@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-29",
+  "application_version": "0.2.0",
+  "host": "Windows 11 x64, Ryzen 5 9600X, 12 logical CPUs",
+  "hardware": "USB345f:9132, existing HID+libusb0 driver",
+  "usb_runs": [
+    {
+      "duration_seconds": 120.24,
+      "usb_output": true,
+      "frames": 120,
+      "media_type": "none",
+      "error": null,
+      "media_error": "",
+      "warm_mean_cpu_percent_one_core": 0.75,
+      "warm_mean_cpu_percent_machine": 0.06,
+      "warm_rss_growth_mb": -0.044,
+      "passed": true,
+      "limits": "Short regression probe, not proof of leak freedom. CPU reports one-core percent and whole-machine equivalent."
+    },
+    {
+      "duration_seconds": 120.03,
+      "usb_output": true,
+      "frames": 1777,
+      "media_type": "image",
+      "error": null,
+      "media_error": "",
+      "warm_mean_cpu_percent_one_core": 3.62,
+      "warm_mean_cpu_percent_machine": 0.3,
+      "warm_rss_growth_mb": 0.562,
+      "passed": true,
+      "limits": "Short regression probe, not proof of leak freedom. CPU reports one-core percent and whole-machine equivalent."
+    },
+    {
+      "duration_seconds": 120.03,
+      "usb_output": true,
+      "frames": 1782,
+      "media_type": "video",
+      "error": null,
+      "media_error": "",
+      "warm_mean_cpu_percent_one_core": 5.6,
+      "warm_mean_cpu_percent_machine": 0.47,
+      "warm_rss_growth_mb": 0.961,
+      "passed": true,
+      "limits": "Short regression probe, not proof of leak freedom. CPU reports one-core percent and whole-machine equivalent."
+    }
+  ],
+  "worker_stress": {
+    "app_version": "0.2.0",
+    "lane": "generated-media worker start/stop stress",
+    "usb_writes": false,
+    "cycles_requested": 72,
+    "cleanup_probe_cycles": 3,
+    "elapsed_seconds": 32.593,
+    "cpu_seconds": 2.984,
+    "average_one_core_cpu_percent": 9.16,
+    "average_machine_cpu_percent": 0.76,
+    "steady_rss_growth_bytes": 200704,
+    "counters": {
+      "opens": 75,
+      "sends": 261,
+      "closes": 75,
+      "maximum_live_displays": 1,
+      "live_displays": 0,
+      "source_instances": 2,
+      "media_switches": 78,
+      "native_image_closes": 25,
+      "native_video_closes": 26
+    },
+    "checks": {
+      "unique_session_tokens": true,
+      "lock_exclusion_and_release": true,
+      "stale_stop_ignored": true,
+      "same_worker_and_media_owner": true,
+      "maximum_one_usb_session": true,
+      "worker_joined": true,
+      "latest_frame_released": true,
+      "all_fake_displays_closed": true,
+      "status_released": true,
+      "first_owner_object_released": true,
+      "second_worker_joined": true,
+      "second_owner_object_released": true,
+      "no_thread_growth_across_owner_lifetimes": true,
+      "no_handle_growth_across_owner_lifetimes": true,
+      "steady_rss_growth_under_20_mib": true
+    },
+    "retained_after_first_owner": {
+      "threads": 2,
+      "handles": 2
+    },
+    "errors": [],
+    "passed": true,
+    "limits": "Short synthetic run on this host; no physical USB throughput, long-runtime guarantee, codec universality, or Linux runtime claim."
+  },
+  "visual_status": "USB transfer success only; physical panel picture awaiting owner review. Source editor screenshot inspected. Native installer UI automation unavailable.",
+  "package_checks": "Windows installer install, installed smoke and uninstall passed from a path containing spaces; settings directory preserved."
+}

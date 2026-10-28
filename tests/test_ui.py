@@ -213,6 +213,34 @@ def test_invalid_media_reports_error_but_keeps_a_preview(settings, tmp_path):
         assert worker.shutdown(3)
 
 
+def test_valid_media_clears_prior_media_status_without_clearing_usb_errors(settings, tmp_path):
+    settings.update(media_type="image", media_path=str(tmp_path / "missing.gif"))
+    worker = ui.CompositionWorker(settings)
+    worker.start()
+    try:
+        assert wait_until(lambda: worker.latest_frame() is not None and bool(worker.state.error))
+        failed_sequence = worker.latest_frame()[0]
+        settings.update(media_type="none", media_path="")
+        worker.update_settings(settings)
+        assert wait_until(lambda: worker.latest_frame(failed_sequence) is not None and not worker.state.error)
+        assert "Media:" not in worker.state.status
+        assert "Preview only" in worker.state.status
+
+        settings.update(media_type="image", media_path=str(tmp_path / "missing-again.gif"))
+        worker.update_settings(settings)
+        assert wait_until(lambda: bool(worker.state.error))
+        # A newer transport error must survive a later successful media change.
+        worker._publish_state(error="USB cable disconnected", status="Display stopped: USB cable disconnected")
+        settings.update(media_type="none", media_path="")
+        before_recovery = worker.latest_frame()[0]
+        worker.update_settings(settings)
+        assert wait_until(lambda: worker.latest_frame(before_recovery) is not None)
+        assert worker.state.error == "USB cable disconnected"
+        assert "USB cable disconnected" in worker.state.status
+    finally:
+        assert worker.shutdown(3)
+
+
 def test_editor_controls_commit_opacity_position_and_close_cleanly(settings, monkeypatch):
     app = QApplication.instance() or QApplication([])
     saved = []
