@@ -18,3 +18,12 @@ install-unmute-driver.sh
 .vscode/
 .venv/
 venv/
+
+# Packaging and local verification artifacts
+build/
+dist/
+*.spec
+*.egg-info/
+.pytest_cache/
+verification-local/
+release-sources/

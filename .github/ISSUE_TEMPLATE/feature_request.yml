@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest an improvement to Frost Vision Studio.
+title: "[Feature]: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the user task and why the current behavior is insufficient.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Platform or hardware context
+      description: For a new panel, include USB IDs, resolution, available protocol evidence, and whether you can test the actual device. Omit serial numbers and proprietary files.

@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "frost-vision-studio"
+version = "0.2.0"
+description = "A standalone Windows and Linux studio for the Frost Vision USB AIO display"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [{name = "Ashraf Ali Hussain Al-Saloul"}]
+dependencies = [
+    "PySide6-Essentials==6.12.0",
+    "Pillow==13.0.0",
+    "psutil==7.2.2",
+    "pyusb==1.3.1",
+    "hidapi==0.15.0",
+    "libusb-package==1.0.30.0",
+    "av==19.0.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.2.0", "pyinstaller==6.22.3"]
+
+[project.scripts]
+frost-vision-studio = "frostvision.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/ASHRAF-2004/frost-vision-studio"
+Issues = "https://github.com/ASHRAF-2004/frost-vision-studio/issues"
+Releases = "https://github.com/ASHRAF-2004/frost-vision-studio/releases"
+
+[tool.setuptools]
+packages = ["frostvision"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

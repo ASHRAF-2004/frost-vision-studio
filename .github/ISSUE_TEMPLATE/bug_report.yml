@@ -1,0 +1,51 @@
+name: Bug report
+description: Report a reproducible problem with the app, media, or display connection.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Remove device serial numbers, personal paths, private media, and secrets from logs. Security vulnerabilities follow SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: App version and installation type
+      placeholder: "0.2.0 prerelease; Windows installer / portable / source"
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system and architecture
+      placeholder: "Windows 11 x64, or Linux distribution/version and desktop session"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include the action taken and whether physical output was started.
+      placeholder: "1. Open the editor..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware and driver details, if relevant
+      description: USB vendor/product ID, panel profile/resolution, and HID/bulk interface driver names. Do not include serial numbers.
+  - type: textarea
+    id: media
+    attributes:
+      label: Media or performance details, if relevant
+      description: File type, codec, dimensions, duration, reproduction time, and sanitized soak measurements. Do not upload private media.
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Sanitized diagnostics and screenshots
+      description: Run --diagnose --output diagnostics.json, review the file, and paste relevant output. For a wrong physical picture, a photo helps distinguish transport success from appearance.
