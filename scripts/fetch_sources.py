@@ -18,12 +18,14 @@ import tarfile
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 PYAV_RECIPE_REF = "bac889417e26be29615cb6a3f38318151fed55cd"
 PYAV_RECIPE_URL = f"https://raw.githubusercontent.com/PyAV-Org/pyav-ffmpeg/{PYAV_RECIPE_REF}/scripts/pkg.py"
 SOURCES = {
     "qtbase-6.12.0.tar.gz": "https://github.com/qt/qtbase/archive/refs/tags/v6.12.0.tar.gz",
     "qtsvg-6.12.0.tar.gz": "https://github.com/qt/qtsvg/archive/refs/tags/v6.12.0.tar.gz",
+    "qtwayland-6.12.0.tar.gz": "https://github.com/qt/qtwayland/archive/refs/tags/v6.12.0.tar.gz",
+    "qtimageformats-6.12.0.tar.gz": "https://github.com/qt/qtimageformats/archive/refs/tags/v6.12.0.tar.gz",
     "pyside-setup-6.12.0.tar.gz": "https://github.com/pyside/pyside-setup/archive/refs/tags/v6.12.0.tar.gz",
     "libusb-1.0.30.tar.gz": "https://github.com/libusb/libusb/archive/refs/tags/v1.0.30.tar.gz",
     "pyav-19.0.2.tar.gz": "https://github.com/PyAV-Org/PyAV/archive/refs/tags/v19.0.2.tar.gz",
@@ -118,9 +120,9 @@ def main():
         artifact_cache.cleanup()
     (directory / "SOURCES.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     (directory / "README.txt").write_text(
-        "Native component sources for Frost Vision Studio 0.2.0.\n"
+        "Native component sources for Frost Vision Studio 0.2.1.\n"
         "Includes GPL/LGPL codec sources and upstream build recipes/patches.\n"
-        "Application source: https://github.com/ASHRAF-2004/frost-vision-studio/tree/v0.2.0\n"
+        "Application source: https://github.com/ASHRAF-2004/frost-vision-studio/tree/v0.2.1\n"
         "SOURCES.json records their original URLs and SHA-256 digests.\n"
         "Each source archive includes its upstream licenses and build documentation.\n"
         "PyAV FFmpeg recipe release: 9.0.2-1, commit " + PYAV_RECIPE_REF + ".\n"

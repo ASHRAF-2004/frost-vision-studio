@@ -14,13 +14,13 @@
 
 Frost Vision Studio is an independent desktop editor and direct USB renderer for the **480 × 480 Invasion Frost Vision AIO screen**. Build a display from local images, animation, video, and hardware overlays without installing or running the original screen application.
 
-**Version 0.2.0 is a prerelease.** Windows x64 and Linux x64 are the current targets. The USB implementation is scoped to controller **`345f:9132` / `VMAXD05`**; other AIO screens, other resolutions, and macOS are future work.
+**Version 0.2.1 is a prerelease.** Windows x64 and Linux x64 are the current targets. The USB implementation is scoped to controller **`345f:9132` / `VMAXD05`**; other AIO screens, other resolutions, and macOS are future work.
 
 ![Frost Vision Studio editor on Windows](assets/screenshot.png)
 
 ## Install
 
-Open [GitHub Releases](https://github.com/ASHRAF-2004/frost-vision-studio/releases) and choose the 0.2.0 prerelease:
+Open [GitHub Releases](https://github.com/ASHRAF-2004/frost-vision-studio/releases) and choose the 0.2.1 prerelease:
 
 | Platform | Package | Start here |
 |---|---|---|

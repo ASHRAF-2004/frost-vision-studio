@@ -1,6 +1,6 @@
 # Privacy
 
-Frost Vision Studio 0.2.0 processes your composition locally. It has no
+Frost Vision Studio 0.2.1 processes your composition locally. It has no
 telemetry, sign-in, analytics, advertising, cloud storage or automatic updater.
 It does not upload media or hardware readings.
 

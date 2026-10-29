@@ -1,5 +1,5 @@
 Frost Vision Studio — Terms of Use
-Version 0.2.0 · 29 October 2026
+Version 0.2.1 · 29 October 2026
 
 Frost Vision Studio is an independent, open-source display editor maintained
 by Ashraf Ali Hussain Al-Saloul (أشرف علي حسين الصلول).

@@ -1,6 +1,6 @@
 # Installation and use
 
-Version 0.2.0 is initially published as a **prerelease** for Windows 11 x64 and Linux x64. The supported USB profile is `345f:9132`, `VMAXD05`, 480 × 480. Read [HARDWARE.md](HARDWARE.md) before attempting physical output on another panel.
+Version 0.2.1 is initially published as a **prerelease** for Windows 11 x64 and Linux x64. The supported USB profile is `345f:9132`, `VMAXD05`, 480 × 480. Read [HARDWARE.md](HARDWARE.md) before attempting physical output on another panel.
 
 ## Download
 
@@ -8,9 +8,9 @@ Choose the matching asset on [GitHub Releases](https://github.com/ASHRAF-2004/fr
 
 | Asset | Purpose |
 |---|---|
-| `FrostVisionStudio-0.2.0-windows-x64-setup.exe` | Per-user Windows installer |
-| `FrostVisionStudio-0.2.0-windows-x64.zip` | Windows portable application folder |
-| `FrostVisionStudio-0.2.0-linux-x64.tar.gz` | Linux portable application folder |
+| `FrostVisionStudio-0.2.1-windows-x64-setup.exe` | Per-user Windows installer |
+| `FrostVisionStudio-0.2.1-windows-x64.zip` | Windows portable application folder |
+| `FrostVisionStudio-0.2.1-linux-x64.tar.gz` | Linux portable application folder |
 | `SHA256SUMS.txt` | Checksums for the published packages |
 
 These packages include the Python application runtime. You do not need to install Python to use them. Linux still needs compatible system graphics/USB libraries; Windows physical output still needs compatible interface drivers.
@@ -48,7 +48,7 @@ sudo apt install libegl1 libopengl0 libusb-1.0-0 libxcb-cursor0 \
 Extract and launch:
 
 ```bash
-tar -xzf FrostVisionStudio-0.2.0-linux-x64.tar.gz
+tar -xzf FrostVisionStudio-0.2.1-linux-x64.tar.gz
 cd FrostVisionStudio
 ./FrostVisionStudio
 ```

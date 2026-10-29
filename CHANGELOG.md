@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 — 2026-10-29 (preview)
+
+- Remove unused Qt PDF, virtual keyboard and QML/Quick components from Windows
+  packages; preserve the Widgets/SVG editor and native Linux Wayland support.
+- Retain corresponding Qt image-format and Wayland sources alongside native
+  media sources and license notices.
+- The 0.2.0 tag records the initial verified implementation; its release was
+  stopped before publication. 0.2.1 is the first packaged Windows/Linux preview.
+
 Notable user-facing changes are recorded here. Git tags and [GitHub Releases](https://github.com/ASHRAF-2004/frost-vision-studio/releases) identify published builds and their prerelease status.
 
 ## 0.2.0 — 2026-10-29 · initial prerelease

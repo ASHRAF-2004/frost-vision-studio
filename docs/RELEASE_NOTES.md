@@ -1,5 +1,8 @@
 Frost Vision Studio now has a portable Windows/Linux editor and native Windows installer.
 
+This 0.2.1 preview also removes unused Qt PDF, virtual keyboard and QML/Quick
+components from the Windows package, while retaining native Linux Wayland support.
+
 - Windows 11 x64 setup EXE with terms, privacy information, Start menu shortcut and uninstaller.
 - Portable Windows x64 ZIP and Linux x64 tar.gz.
 - Preserved images, animated GIFs, video, draggable metric layers, transforms and login startup.

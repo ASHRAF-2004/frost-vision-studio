@@ -8,7 +8,7 @@ this notice. Those licenses govern their respective components.
 | Component | License | Upstream source |
 | --- | --- | --- |
 | Python | PSF License | https://www.python.org/downloads/source/ |
-| Qt / PySide6 / Shiboken | LGPL-3.0 / GPL / commercial, according to component; this build uses LGPL modules | https://code.qt.io/pyside/pyside-setup.git/ |
+| QtBase / QtSvg / QtWayland / QtImageFormats / PySide6 / Shiboken | LGPL-3.0 / GPL / commercial, according to component; this build uses LGPL modules, including Linux Wayland integration and Qt image-format plugins | https://github.com/qt/qtbase and https://github.com/qt/qtsvg and https://github.com/qt/qtwayland and https://github.com/qt/qtimageformats and https://code.qt.io/pyside/pyside-setup.git/ |
 | Pillow | MIT-CMU and bundled library licenses | https://github.com/python-pillow/Pillow |
 | psutil | BSD-3-Clause | https://github.com/giampaolo/psutil |
 | PyUSB | BSD-3-Clause | https://github.com/pyusb/pyusb |

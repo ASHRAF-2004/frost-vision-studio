@@ -12,8 +12,33 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 APP = "FrostVisionStudio"
+
+
+def trim_unused_qt_plugins(output: Path) -> None:
+    """Qt's broad GUI hook includes optional PDF/keyboard backends we never use.
+
+    Remove those plugins and their otherwise unused libraries. This keeps the
+    Widgets/SVG application independent of QtWebEngine, QML and GPL-only virtual
+    keyboard modules. Frozen application smoke tests run after this step.
+    """
+    base = (output / "_internal" / "PySide6").resolve()
+    if not base.is_relative_to(output.resolve()):
+        raise ValueError("Unexpected Qt output directory")
+    names = ("Qt6Pdf", "Qt6VirtualKeyboard", "Qt6Qml", "Qt6Quick")
+    for path in base.rglob("*"):
+        if not path.is_file():
+            continue
+        name = path.name.lower()
+        optional_plugin = any(part in name for part in ("qpdf.", "qtvirtualkeyboardplugin."))
+        optional_library = any(name.startswith(prefix) for item in names
+                               for prefix in (item.lower(), "lib" + item.lower()))
+        if optional_plugin or optional_library:
+            target = path.resolve()
+            if not target.is_relative_to(base):
+                raise ValueError("Refusing to remove a Qt artifact outside the build")
+            path.unlink()
 
 
 def copy_licenses(destination: Path) -> None:
@@ -68,6 +93,7 @@ def main() -> None:
     command.append("aio_screen_manager.py")
     subprocess.run(command, check=True)
     output = ROOT / "dist" / APP
+    trim_unused_qt_plugins(output)
     copy_licenses(output / "licenses")
     for name in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
         shutil.copy2(ROOT / name, output / name)

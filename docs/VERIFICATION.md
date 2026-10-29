@@ -1,5 +1,9 @@
 # 0.2.0 verification record
 
+The first published preview is **0.2.1**, which retains this verified application
+engine and adds package trimming for unused Qt components. Frozen Windows and
+Linux smoke checks run again on the 0.2.1 packages.
+
 Measured on Windows 11 x64 on 29 October 2026 with the attached `345f:9132`
 panel, using its existing HID and libusb0 drivers. No vendor application or
 driver replacement was used. These measurements describe short regression
